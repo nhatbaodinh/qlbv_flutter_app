@@ -32,10 +32,10 @@ dependencies:
     sdk: flutter
 
   supabase_flutter:
+  badges:
 
   http:
-  hooks_riverpod:
-  json_serializable:
+
 
 
   # The following adds the Cupertino Icons font to your application.

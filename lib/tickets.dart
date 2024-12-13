@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'pac';
+
+import 'package:flutter/material.dart';
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
 
@@ -10,6 +10,6 @@ class ProductsPage extends StatefulWidget {
 class _ProductsPageState extends State<ProductsPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold();
   }
 }
