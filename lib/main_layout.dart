@@ -45,18 +45,23 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 }
+
 Widget BuildCart() {
   return GestureDetector(
-    // onTap: () => Get.to(),
-    // child: GetBuilder<FruitController>(
-    //   id: 'cart', // Target the cart update
-    //   builder: (controller) {
-    //     return badges.Badge(
-    //       showBadge: controller.cart.length>0,
-    //       badgeContent: Text('${controller.cart.length}'), // Update with item count
-    //       child: const Icon(Icons.add_shopping_cart_outlined, size: 30,),
-    //     );
-    //   },
-    // ),
+    onTap: () {
+      // TODO: Implement your cart navigation logic
+    },
+    child: const SizedBox(
+      width: 50,
+      height: 50,
+      child: badges.Badge(
+        showBadge: true,
+        badgeContent: Text(
+          '3', // Tạm thời sử dụng giá trị giả lập
+          style: TextStyle(color: Colors.white),
+        ),
+        child: const Icon(Icons.add_shopping_cart_outlined, size: 30),
+      ),
+    ),
   );
 }
