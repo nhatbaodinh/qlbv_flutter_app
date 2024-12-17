@@ -33,6 +33,7 @@ dependencies:
 
   supabase_flutter:
   carousel_slider:
+  badges:
 
 
   # The following adds the Cupertino Icons font to your application.
