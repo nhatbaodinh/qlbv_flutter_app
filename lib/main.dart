@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qlbv_flutter_app/home.dart';
-import 'package:qlbv_flutter_app/login.dart';
+import 'package:qlbv_flutter_app/Home_Page.dart';
+import 'package:qlbv_flutter_app/Login_Page.dart';
 import 'package:qlbv_flutter_app/Products_Page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
