@@ -51,8 +51,8 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // Mục Vé Bán Chạy
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
             child: Text(
               'Vé Bán Chạy',
               style: TextStyle(
