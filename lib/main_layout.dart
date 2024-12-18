@@ -16,6 +16,20 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Khởi tạo PageController với trang ban đầu
+    _pageController = PageController(initialPage: _currentIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose(); // Đảm bảo giải phóng tài nguyên
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,21 +41,26 @@ class _MainLayoutState extends State<MainLayout> {
           BuildCart(),
           const SizedBox(width: 15,)
         ],
-
       ),
-      body: IndexedStack(
-        index: _currentIndex, // Hiển thị trang dựa trên chỉ mục
-        children: widget.pages,
+      body: PageView(
+        controller: _pageController, // Điều khiển trang hiện tại
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index; // Cập nhật chỉ số khi cuộn trang
+          });
+        },
+        children: widget.pages, // Các trang trong body
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.pinkAccent,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
-            _currentIndex = index; // Thay đổi trang khi người dùng chọn
+            _currentIndex = index; // Cập nhật chỉ số khi người dùng chọn mục
+            _pageController.jumpToPage(index); // Chuyển đến trang tương ứng
           });
         },
-        items: widget.navItems,
+        items: widget.navItems, // Các mục trong BottomNavigationBar
       ),
     );
   }
