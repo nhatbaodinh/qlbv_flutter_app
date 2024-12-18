@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:badges/badges.dart' as badges;
 
 class MainLayout extends StatefulWidget {
   final List<Widget> pages; // Các trang sẽ được truyền vào
