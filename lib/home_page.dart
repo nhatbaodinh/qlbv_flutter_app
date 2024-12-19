@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'tickets_model.dart';
+import 'products_model.dart';
 import 'product_detail_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,35 +13,35 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final SupabaseClient supabase = Supabase.instance.client;
-  List<Tickets> tickets = [];
+  List<Products> products = [];
   bool isLoading = true; // Loading state flag
   String errorMessage = ''; // Error message holder
 
   @override
   void initState() {
     super.initState();
-    fetchTickets();
+    fetchProducts();
   }
 
   // Fetch tickets from the database
-  Future<void> fetchTickets() async {
+  Future<void> fetchProducts() async {
     try {
       final response = await supabase.from('Ve').select('*').eq('TrangThai', true); // Only get active tickets
       if (response != null && response is List) {
-        final List<Tickets> fetchedTickets = response.map((e) => Tickets.fromMap(e)).toList();
+        final List<Products> fetchedProducts = response.map((e) => Products.fromMap(e)).toList();
         setState(() {
-          tickets = fetchedTickets;
+          products = fetchedProducts;
           isLoading = false;
         });
       } else {
         setState(() {
-          errorMessage = 'Failed to load tickets: Invalid response';
+          errorMessage = 'Failed to load products: Invalid response';
           isLoading = false;
         });
       }
     } catch (error) {
       setState(() {
-        errorMessage = 'Failed to load tickets: $error';
+        errorMessage = 'Failed to load products: $error';
         isLoading = false;
       });
     }
@@ -99,8 +99,8 @@ class _HomePageState extends State<HomePage> {
               : errorMessage.isNotEmpty
               ? Center(child: Text(errorMessage, style: const TextStyle(color: Colors.red)))
               : Column(
-            children: tickets.map((ticket) {
-              return TicketCard(ticket: ticket);
+            children: products.map((product) {
+              return ProductCard(product: product);
             }).toList(),
           ),
         ],
@@ -157,10 +157,10 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class TicketCard extends StatelessWidget {
-  final Tickets ticket;
+class ProductCard extends StatelessWidget {
+  final Products product;
 
-  const TicketCard({required this.ticket});
+  const ProductCard({required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +168,7 @@ class TicketCard extends StatelessWidget {
       margin: const EdgeInsets.all(8.0),
       child: ListTile(
         leading: Image.network(
-          ticket.anh ?? 'https://via.placeholder.com/150', // fallback image
+          product.anh ?? 'https://via.placeholder.com/150', // fallback image
           width: 50,
           height: 50,
           fit: BoxFit.cover,
@@ -176,14 +176,14 @@ class TicketCard extends StatelessWidget {
             return const Icon(Icons.image, size: 50); // Fallback icon if image fails
           },
         ),
-        title: Text(ticket.ten),
-        subtitle: Text(ticket.loaiVe ?? 'Chưa có loại vé'),
-        trailing: Text('${ticket.gia} VND'),
+        title: Text(product.ten),
+        subtitle: Text(product.loai ?? 'Chưa có loại vé'),
+        trailing: Text('${product.gia} VND'),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductDetailPage(ticket: ticket),
+              builder: (context) => ProductDetailPage(product: product),
             ),
           );
         },

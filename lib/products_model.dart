@@ -1,18 +1,18 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class Tickets {
+class Products {
   int id;
   String ten;
-  String? loaiVe;
+  String? loai;
   int gia;
   int soLuong;
   bool trangThai;
   String? anh;
 
-  Tickets({
+  Products({
     required this.id,
     required this.ten,
-    required this.loaiVe,
+    required this.loai,
     required this.gia,
     required this.soLuong,
     required this.trangThai,
@@ -20,11 +20,11 @@ class Tickets {
   });
 
   // Hàm tạo đối tượng từ Map (chuyển đổi dữ liệu từ Supabase)
-  factory Tickets.fromMap(Map<String, dynamic> map) {
-    return Tickets(
+  factory Products.fromMap(Map<String, dynamic> map) {
+    return Products(
       id: map['Id'] as int,
       ten: map['Ten'] as String,
-      loaiVe: map['LoaiVe'] as String?,
+      loai: map['Loai'] as String?,
       gia: map['Gia'] as int,
       soLuong: map['SoLuong'] as int,
       trangThai: map['TrangThai'] as bool,
@@ -37,7 +37,7 @@ class Tickets {
     return {
       'Id': this.id,
       'Ten': this.ten,
-      'LoaiVe': this.loaiVe,
+      'Loai': this.loai,
       'Gia': this.gia,
       'SoLuong': this.soLuong,
       'TrangThai': this.trangThai,
@@ -46,38 +46,38 @@ class Tickets {
   }
 }
 
-class Tickets_Snapshot {
-  Tickets tickets;
+class Products_Snapshot {
+  Products products;
 
-  Tickets_Snapshot({required this.tickets});
+  Products_Snapshot({required this.products});
 
   // Xóa vé trong cơ sở dữ liệu
   Future<void> delete() async {
     final supabase = Supabase.instance.client;
-    await supabase.from("Ve").delete().eq("Id", tickets.id);
+    await supabase.from("SanPham").delete().eq("Id", products.id);
   }
 
   // Cập nhật vé trong cơ sở dữ liệu
-  Future<void> update(Tickets newTicket) async {
+  Future<void> update(Products newProduct) async {
     final supabase = Supabase.instance.client;
-    await supabase.from("Ve").update(newTicket.toMap()).eq("Id", tickets.id);
+    await supabase.from("SanPham").update(newProduct.toMap()).eq("Id", products.id);
   }
 
   // Chèn vé mới vào cơ sở dữ liệu
-  static Future<void> insert(Tickets newTicket) async {
+  static Future<void> insert(Products newProduct) async {
     final supabase = Supabase.instance.client;
-    await supabase.from("Ve").insert(newTicket.toMap());
+    await supabase.from("SanPham").insert(newProduct.toMap());
   }
 
   // Lấy tất cả vé từ cơ sở dữ liệu
-  static Future<List<Tickets_Snapshot>> getAll() async {
+  static Future<List<Products_Snapshot>> getAll() async {
     final supabase = Supabase.instance.client;
-    final response = await supabase.from("Ve").select();
+    final response = await supabase.from("SanPham").select();
 
     // Kiểm tra kết quả trả về và chuyển đổi thành danh sách vé
     if (response is List) {
       return response
-          .map((e) => Tickets_Snapshot(tickets: Tickets.fromMap(e)))
+          .map((e) => Products_Snapshot(products: Products.fromMap(e)))
           .toList();
     } else {
       return [];

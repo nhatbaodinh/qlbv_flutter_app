@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qlbv_flutter_app/tickets_model.dart';
+import 'package:qlbv_flutter_app/products_model.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -22,8 +22,8 @@ class _ProductsPageState extends State<ProductsPage> {
           ),
         ),
       ),
-      body: FutureBuilder<List<Tickets_Snapshot>>(
-        future: Tickets_Snapshot.getAll(),  // Fetch all tickets
+      body: FutureBuilder<List<Products_Snapshot>>(
+        future: Products_Snapshot.getAll(),  // Fetch all tickets
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -38,7 +38,7 @@ class _ProductsPageState extends State<ProductsPage> {
           }
 
           var list = snapshot.data!;  // List of tickets
-          print("Fetched tickets: $list");  // Log to check the fetched data
+          print("Fetched products: $list");  // Log to check the fetched data
 
           if (list.isEmpty) {
             return const Center(
@@ -54,8 +54,8 @@ class _ProductsPageState extends State<ProductsPage> {
               crossAxisSpacing: 5,
               childAspectRatio: 0.75,
               children: list.map(
-                    (ticket) {
-                  print("Ticket details: ${ticket.tickets.ten}");  // Log each ticket's details
+                    (product) {
+                  print("Product details: ${product.products.ten}");  // Log each ticket's details
                   return Card(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,14 +63,14 @@ class _ProductsPageState extends State<ProductsPage> {
                         // Display the image of the ticket (fallback image if no URL)
                         Expanded(
                           child: Image.network(
-                            ticket.tickets.anh ?? "https://via.placeholder.com/150", // Placeholder image
+                            product.products.anh ?? "https://via.placeholder.com/150", // Placeholder image
                             fit: BoxFit.cover,
                           ),
                         ),
                         const SizedBox(height: 8.0),
                         // Display the ticket name (ten)
                         Text(
-                          ticket.tickets.ten,
+                          product.products.ten,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -79,14 +79,14 @@ class _ProductsPageState extends State<ProductsPage> {
                         const SizedBox(height: 4.0),
                         // Display the ticket price (gia)
                         Text(
-                          "Giá: ${ticket.tickets.gia} VND",
+                          "Giá: ${product.products.gia} VND",
                           style: const TextStyle(color: Colors.green),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 4.0),
                         // Display the ticket type (loaiVe)
                         Text(
-                          "Loại vé: ${ticket.tickets.loaiVe}",
+                          "Loại vé: ${product.products.loai}",
                           style: const TextStyle(color: Colors.grey),
                           textAlign: TextAlign.center,
                         ),

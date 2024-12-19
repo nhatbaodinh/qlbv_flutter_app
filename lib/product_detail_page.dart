@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'tickets_model.dart';
+import 'products_model.dart';
 
 class ProductDetailPage extends StatelessWidget {
-  final Tickets ticket; // Dữ liệu vé được truyền từ trang trước
+  final Products product;
 
-  const ProductDetailPage({Key? key, required this.ticket}) : super(key: key);
+  const ProductDetailPage({Key? key, required this.product}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +29,11 @@ class ProductDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Hiển thị hình ảnh sản phẩm
-              ticket.anh != null && ticket.anh!.isNotEmpty
+              product.anh != null && product.anh!.isNotEmpty
                   ? ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
                 child: Image.network(
-                  ticket.anh!,
+                  product.anh!,
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -66,7 +66,7 @@ class ProductDetailPage extends StatelessWidget {
 
               // Tên vé
               Text(
-                ticket.ten,
+                product.ten,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -76,9 +76,9 @@ class ProductDetailPage extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              // Loại vé
+              // Loại
               Text(
-                'Loại vé: ${ticket.loaiVe ?? 'Chưa có loại vé'}',
+                'Loại: ${product.loai ?? 'Chưa phân loại'}',
                 style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
 
@@ -86,7 +86,7 @@ class ProductDetailPage extends StatelessWidget {
 
               // Giá vé
               Text(
-                'Giá: ${ticket.gia} VND',
+                'Giá: ${product.gia} VND',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class ProductDetailPage extends StatelessWidget {
 
               // Số lượng vé còn lại
               Text(
-                'Số lượng còn lại: ${ticket.soLuong}',
+                'Số lượng còn lại: ${product.soLuong}',
                 style: const TextStyle(fontSize: 18, color: Colors.black),
               ),
 
@@ -112,11 +112,11 @@ class ProductDetailPage extends StatelessWidget {
                     style: TextStyle(fontSize: 18, color: Colors.black),
                   ),
                   Text(
-                    ticket.trangThai ? 'Còn hàng' : 'Hết hàng',
+                    product.trangThai ? 'Còn hàng' : 'Hết hàng',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: ticket.trangThai ? Colors.green : Colors.red,
+                      color: product.trangThai ? Colors.green : Colors.red,
                     ),
                   ),
                 ],
@@ -124,38 +124,64 @@ class ProductDetailPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Nút mua vé
-              Center(
-                child: ElevatedButton(
-                  onPressed: ticket.trangThai
-                      ? () {
-                    // Xử lý logic khi người dùng muốn mua vé
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Mua vé "${ticket.ten}" thành công!'),
-                        duration: const Duration(seconds: 2),
+              // Nút mua vé và thêm vào giỏ hàng
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: 160, // Đặt độ rộng của nút
+                    child: ElevatedButton(
+                      onPressed: product.trangThai
+                          ? () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Đã thêm "${product.ten}" vào giỏ hàng!'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: product.trangThai ? Colors.green : Colors.grey,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                       ),
-                    );
-                  }
-                      : null, // Nút sẽ bị disable nếu hết hàng
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ticket.trangThai
-                        ? Colors.blue
-                        : Colors.grey, // Màu nút thay đổi theo trạng thái
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      child: const Text(
+                        'Thêm vào Giỏ hàng',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    'Mua Vé Ngay',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  SizedBox(
+                    width: 150, // Đặt độ rộng của nút
+                    child: ElevatedButton(
+                      onPressed: product.trangThai
+                          ? () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Mua vé "${product.ten}" thành công!'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: product.trangThai ? Colors.blue : Colors.grey,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'Mua ngay',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                ],
+              )
             ],
           ),
         ),
