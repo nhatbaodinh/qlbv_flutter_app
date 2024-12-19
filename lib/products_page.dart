@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qlbv_flutter_app/TicketsModel.dart';
+import 'package:qlbv_flutter_app/tickets_model.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});

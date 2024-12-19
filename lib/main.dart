@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:qlbv_flutter_app/Home_Page.dart';
-import 'package:qlbv_flutter_app/Login_Page.dart';
-import 'package:qlbv_flutter_app/Products_Page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'home_page.dart';
+import 'products_page.dart';
+import 'login_page.dart';
 
 import 'main_layout.dart';
 

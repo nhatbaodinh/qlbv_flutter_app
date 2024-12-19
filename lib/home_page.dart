@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:qlbv_flutter_app/TicketsModel.dart'; // Import the Tickets model
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'tickets_model.dart';
+import 'product_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -96,7 +97,7 @@ class _HomePageState extends State<HomePage> {
           isLoading
               ? const Center(child: CircularProgressIndicator())
               : errorMessage.isNotEmpty
-              ? Center(child: Text(errorMessage, style: TextStyle(color: Colors.red)))
+              ? Center(child: Text(errorMessage, style: const TextStyle(color: Colors.red)))
               : Column(
             children: tickets.map((ticket) {
               return TicketCard(ticket: ticket);
@@ -172,14 +173,19 @@ class TicketCard extends StatelessWidget {
           height: 50,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            return Icon(Icons.image, size: 50); // Fallback icon if image fails
+            return const Icon(Icons.image, size: 50); // Fallback icon if image fails
           },
         ),
         title: Text(ticket.ten),
         subtitle: Text(ticket.loaiVe ?? 'Chưa có loại vé'),
-        trailing: Text('${ticket.gia ?? 0} VND'),
+        trailing: Text('${ticket.gia} VND'),
         onTap: () {
-          // Handle ticket click
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailPage(ticket: ticket),
+            ),
+          );
         },
       ),
     );
