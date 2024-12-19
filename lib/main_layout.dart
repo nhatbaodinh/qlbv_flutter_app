@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:badges/badges.dart' as badges;
+import 'cart_controller.dart';
+import 'cart_detail.dart'; // Đảm bảo import file cart_detail.dart
 
 class MainLayout extends StatefulWidget {
-  final List<Widget> pages; // Các trang sẽ được truyền vào
-  final List<BottomNavigationBarItem> navItems; // Các mục trong BottomNavigationBar
+  final List<Widget> pages;
+  final List<BottomNavigationBarItem> navItems;
+
   const MainLayout({
     Key? key,
     required this.pages,
@@ -20,13 +25,13 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   void initState() {
     super.initState();
-    // Khởi tạo PageController với trang ban đầu
     _pageController = PageController(initialPage: _currentIndex);
+    Get.put(CartController()); // Khởi tạo CartController
   }
 
   @override
   void dispose() {
-    _pageController.dispose(); // Đảm bảo giải phóng tài nguyên
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -35,32 +40,46 @@ class _MainLayoutState extends State<MainLayout> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Ứng dụng mua vé"),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
-          const SizedBox(width: 15,)
+          GestureDetector(
+            onTap: () {
+              print("Giỏ hàng được nhấn");  // Kiểm tra xem sự kiện có được gọi không
+              Get.dialog(buildCartDialog()); // Hiển thị chi tiết giỏ hàng
+            },
+            child: GetBuilder<CartController>(
+              id: 'cart',
+              builder: (controller) {
+                return badges.Badge(
+                  showBadge: controller.totalItems > 0,
+                  badgeContent: Text('${controller.totalItems}'),
+                  child: const Icon(Icons.shopping_cart),
+                );
+              },
+            ),
+          ),
+
+          const SizedBox(width: 20),
         ],
       ),
       body: PageView(
-        controller: _pageController, // Điều khiển trang hiện tại
+        controller: _pageController,
         onPageChanged: (index) {
           setState(() {
-            _currentIndex = index; // Cập nhật chỉ số khi cuộn trang
+            _currentIndex = index;
           });
         },
-        children: widget.pages, // Các trang trong body
+        children: widget.pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.pinkAccent,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
-            _currentIndex = index; // Cập nhật chỉ số khi người dùng chọn mục
-            _pageController.jumpToPage(index); // Chuyển đến trang tương ứng
+            _currentIndex = index;
+            _pageController.jumpToPage(index);
           });
         },
-        items: widget.navItems, // Các mục trong BottomNavigationBar
+        items: widget.navItems,
       ),
     );
   }
 }
-

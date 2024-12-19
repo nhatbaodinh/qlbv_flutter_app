@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'cart_controller.dart';
 import 'home_page.dart';
 import 'products_page.dart';
 import 'login_page.dart';
@@ -21,9 +23,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  GetMaterialApp(
+      initialBinding: CartBinding() ,
       debugShowCheckedModeBanner: false,
-      home: MainLayout(
+      home: const MainLayout(
         pages: [
           HomePage(),
           ProductsPage(),
