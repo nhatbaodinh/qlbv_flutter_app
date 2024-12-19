@@ -86,11 +86,12 @@ class _ProductsPageState extends State<ProductsPage> {
                       onPressed: () {
                         final cartController = Get.find<CartController>();
                         cartController.addToCart(
-                          product.products.ten,
+
                           product.products.gia,
                         );
                       },
                       child: const Icon(Icons.add_shopping_cart),
+
                     ),
                   ],
                 ),
