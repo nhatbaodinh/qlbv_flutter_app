@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:intl/intl.dart';
+import 'home_controller.dart';
 import 'products_model.dart';
 import 'product_detail_page.dart';
 import 'events_model.dart';
-import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,10 +14,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final SupabaseClient supabase = Supabase.instance.client;
+  final HomeController _controller = HomeController();
   List<Products> products = [];
-  bool isLoading = true; // Loading state flag
-  String errorMessage = ''; // Error message holder
+  bool isLoading = true;
+  String errorMessage = '';
+
+  List<Event> events = [];
+  bool isEventsLoading = true;
+  String eventsErrorMessage = '';
 
   @override
   void initState() {
@@ -26,67 +30,33 @@ class _HomePageState extends State<HomePage> {
     fetchEvents();
   }
 
-  // Fetch tickets from the database
+  // Fetch products using HomeController
   Future<void> fetchProducts() async {
     try {
-      // Lấy 3 sản phẩm có số lượng thấp nhất
-      final response = await supabase
-          .from('SanPham')
-          .select('*')
-          .eq('TrangThai', true) // Chỉ lấy sản phẩm còn hoạt động
-          .order('SoLuong', ascending: true) // Sắp xếp theo số lượng tăng dần
-          .limit(3); // Giới hạn 3 sản phẩm
-
-      if (response != null && response is List) {
-        final List<Products> fetchedProducts =
-        response.map((e) => Products.fromMap(e)).toList();
-        setState(() {
-          products = fetchedProducts;
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          errorMessage = 'Failed to load products: Invalid response';
-          isLoading = false;
-        });
-      }
+      final fetchedProducts = await _controller.fetchProducts();
+      setState(() {
+        products = fetchedProducts;
+        isLoading = false;
+      });
     } catch (error) {
       setState(() {
-        errorMessage = 'Failed to load products: $error';
+        errorMessage = error.toString();
         isLoading = false;
       });
     }
   }
 
-  List<Event> events = [];
-  bool isEventsLoading = true;
-  String eventsErrorMessage = '';
-
-  // Fetch events from the database
+  // Fetch events using HomeController
   Future<void> fetchEvents() async {
     try {
-      // Lấy sự kiện từ bảng 'Events'
-      final response = await supabase
-          .from('SuKien') // Sử dụng bảng 'Events' thay vì 'SanPham'
-          .select('*')
-          .eq('TrangThai', true) // Có thể thêm điều kiện nếu cần
-          .order('NgayDienRa', ascending: true); // Sắp xếp theo ngày diễn ra sự kiện
-
-      if (response != null && response is List) {
-        final List<Event> fetchedEvents = response.map((e) => Event.fromMap(e)).toList();
-        setState(() {
-          events = fetchedEvents;
-          isEventsLoading = false;
-        });
-      } else {
-        setState(() {
-          eventsErrorMessage = 'Failed to load events: Invalid response';
-          isEventsLoading = false;
-        });
-      }
+      final fetchedEvents = await _controller.fetchEvents();
+      setState(() {
+        events = fetchedEvents;
+        isEventsLoading = false;
+      });
     } catch (error) {
       setState(() {
-        eventsErrorMessage = 'Failed to load events: $error';
+        eventsErrorMessage = error.toString();
         isEventsLoading = false;
       });
     }
@@ -145,7 +115,7 @@ class _HomePageState extends State<HomePage> {
               ? Center(child: Text(errorMessage, style: const TextStyle(color: Colors.red)))
               : Column(
             children: products.map((product) {
-              return ProductCard(product: product);
+              return _buildProductCard(product);
             }).toList(),
           ),
 
@@ -160,7 +130,7 @@ class _HomePageState extends State<HomePage> {
 
           // Hiển thị sự kiện
           isEventsLoading
-              ? const Center(child: CircularProgressIndicator()) // Hiển thị loading khi sự kiện đang được tải
+              ? const Center(child: CircularProgressIndicator())
               : eventsErrorMessage.isNotEmpty
               ? Center(child: Text(eventsErrorMessage, style: const TextStyle(color: Colors.red)))
               : CarouselSlider(
@@ -199,13 +169,13 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.phone, color: Colors.blue),
-            title: const Text('Liên hệ: 0909 123 456'),
+          const ListTile(
+            leading: Icon(Icons.phone, color: Colors.blue),
+            title: Text('Liên hệ: 0909 123 456'),
           ),
-          ListTile(
-            leading: const Icon(Icons.email, color: Colors.blue),
-            title: const Text('Email: hotro@website.com'),
+          const ListTile(
+            leading: Icon(Icons.email, color: Colors.blue),
+            title: Text('Email: hotro@website.com'),
           ),
 
           // Blog hoặc tin tức
@@ -283,81 +253,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Widget to build an event card
-  Widget _buildEventCard(String title, String date, String location, String imageUrl) {
-    DateTime eventDate = DateTime.parse(date);
-    String formattedDate = DateFormat('dd/MM/yyyy').format(eventDate);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Tên sự kiện
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            const SizedBox(height: 8), // Khoảng cách giữa tên sự kiện và hình ảnh
-
-            // Hình ảnh dưới tên sự kiện
-            Image.network(
-              imageUrl,
-              width: double.infinity, // Chiếm hết chiều rộng của card
-              height: 120, // Đặt chiều cao hình ảnh
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(Icons.image, size: 40); // Nếu hình ảnh không có
-              },
-            ),
-
-            // Ngày và địa điểm
-            Text('$formattedDate - $location'),
-
-            // Dùng Expanded hoặc Spacer để đẩy nút xuống dưới cùng
-            Spacer(),
-
-            // Nút chi tiết ở dưới cùng bên phải
-            Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Điều hướng đến trang mua vé
-                },
-                child: const Text('Chi tiết'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReviewCard(String name, String review) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(review),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ProductCard extends StatelessWidget {
-  final Products product;
-
-  const ProductCard({required this.product});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildProductCard(Products product) {
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: ListTile(
@@ -381,6 +277,76 @@ class ProductCard extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildEventCard(String title, String date, String location, String imageUrl) {
+    DateTime eventDate = DateTime.parse(date);
+    String formattedDate = DateFormat('dd/MM/yyyy').format(eventDate);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.0), // Apply borderRadius here
+              child: Image.network(
+                imageUrl,
+                width: double.infinity,
+                height: 120,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(Icons.image, size: 40);
+                },
+              ),
+            ),
+            Text(
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              '$formattedDate - $location'
+            ),
+            const Spacer(),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Handle event detail navigation
+                },
+                child:
+                const Text(
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    'Chi tiết'
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewCard(String name, String review) {
+    return Container(
+      width: double.infinity,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text(review),
+            ],
+          ),
+        ),
       ),
     );
   }
