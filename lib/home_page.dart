@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   // Fetch tickets from the database
   Future<void> fetchProducts() async {
     try {
-      final response = await supabase.from('Ve').select('*').eq('TrangThai', true); // Only get active tickets
+      final response = await supabase.from('SanPham').select('*').eq('TrangThai', true); // Only get active tickets
       if (response != null && response is List) {
         final List<Products> fetchedProducts = response.map((e) => Products.fromMap(e)).toList();
         setState(() {
