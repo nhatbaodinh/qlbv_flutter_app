@@ -86,7 +86,7 @@ class _ProductsPageState extends State<ProductsPage> {
                         const SizedBox(height: 4.0),
                         // Display the ticket type (loaiVe)
                         Text(
-                          "Loại vé: ${product.products.loai}",
+                          "Loại: ${product.products.loai}",
                           style: const TextStyle(color: Colors.grey),
                           textAlign: TextAlign.center,
                         ),
