@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:qlbv_flutter_app/products_model.dart';
-
 import 'cart_controller.dart';
 
 class ProductsPage extends StatefulWidget {
@@ -18,6 +16,7 @@ class _ProductsPageState extends State<ProductsPage> {
     final formatter = NumberFormat.decimalPattern(); // Định dạng theo hệ thập phân
     return "${formatter.format(amount)} VND";
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,12 +85,11 @@ class _ProductsPageState extends State<ProductsPage> {
                       onPressed: () {
                         final cartController = Get.find<CartController>();
                         cartController.addToCart(
-
-                          product.products.gia,
+                          product.products.ten, // Assuming the first argument is a String
+                          product.products.gia, // Assuming the second argument is an int
                         );
                       },
                       child: const Icon(Icons.add_shopping_cart),
-
                     ),
                   ],
                 ),
