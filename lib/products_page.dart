@@ -64,7 +64,7 @@ class _ProductsPageState extends State<ProductsPage> {
                   children: [
                     Expanded(
                       child: Image.network(
-                        product.products.anh ?? "https://via.placeholder.com/150",
+                        product.products.anh ?? "https://via.placeholder.com/150", // Ensure fallback to placeholder image if anh is null
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -84,9 +84,11 @@ class _ProductsPageState extends State<ProductsPage> {
                     ElevatedButton(
                       onPressed: () {
                         final cartController = Get.find<CartController>();
+                        // Provide a fallback for anh if it's null
                         cartController.addToCart(
-                          product.products.ten, // Assuming the first argument is a String
-                          product.products.gia, // Assuming the second argument is an int
+                          product.products.ten, // Product name
+                          product.products.gia, // Product price
+                          product.products.anh ?? "https://via.placeholder.com/150", // Provide default image URL if anh is null
                         );
                       },
                       child: const Icon(Icons.add_shopping_cart),
