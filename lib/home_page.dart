@@ -14,6 +14,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String formatCurrency(int amount) {
+    final formatter = NumberFormat.decimalPattern(); // Định dạng theo hệ thập phân
+    return "${formatter.format(amount)} VND";
+  }
+
   final HomeController _controller = HomeController();
   List<Products> products = [];
   bool isLoading = true;
@@ -268,7 +273,7 @@ class _HomePageState extends State<HomePage> {
         ),
         title: Text(product.ten),
         subtitle: Text(product.loai ?? 'Chưa có loại'),
-        trailing: Text('${product.gia} VND'),
+        trailing:Text(formatCurrency(product.gia)),
         onTap: () {
           Navigator.push(
             context,
