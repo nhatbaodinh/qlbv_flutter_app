@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:qlbv_flutter_app/home.dart';
-import 'package:qlbv_flutter_app/login.dart';
-import 'package:qlbv_flutter_app/tickets.dart';
+import 'package:qlbv_flutter_app/Home_Page.dart';
+import 'package:qlbv_flutter_app/Login_Page.dart';
+import 'package:qlbv_flutter_app/Products_Page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'main_layout.dart';
@@ -13,6 +13,8 @@ Future<void> main() async {
   );
   runApp(const MyApp());
 }
+
+final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:badges/badges.dart' as badges;
 
 class MainLayout extends StatefulWidget {
   final List<Widget> pages; // Các trang sẽ được truyền vào
@@ -38,7 +37,6 @@ class _MainLayoutState extends State<MainLayout> {
         title: Text("Ứng dụng mua vé"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
-          BuildCart(),
           const SizedBox(width: 15,)
         ],
       ),
@@ -66,22 +64,3 @@ class _MainLayoutState extends State<MainLayout> {
   }
 }
 
-Widget BuildCart() {
-  return GestureDetector(
-    onTap: () {
-      // TODO: Implement your cart navigation logic
-    },
-    child: const SizedBox(
-      width: 50,
-      height: 50,
-      child: badges.Badge(
-        showBadge: true,
-        badgeContent: Text(
-          '3', // Tạm thời sử dụng giá trị giả lập
-          style: TextStyle(color: Colors.white),
-        ),
-        child: const Icon(Icons.add_shopping_cart_outlined, size: 30),
-      ),
-    ),
-  );
-}
