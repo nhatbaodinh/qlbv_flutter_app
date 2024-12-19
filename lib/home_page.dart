@@ -3,6 +3,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'products_model.dart';
 import 'product_detail_page.dart';
+import 'events_model.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,14 +23,23 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     fetchProducts();
+    fetchEvents();
   }
 
   // Fetch tickets from the database
   Future<void> fetchProducts() async {
     try {
-      final response = await supabase.from('SanPham').select('*').eq('TrangThai', true); // Only get active tickets
+      // Lấy 3 sản phẩm có số lượng thấp nhất
+      final response = await supabase
+          .from('SanPham')
+          .select('*')
+          .eq('TrangThai', true) // Chỉ lấy sản phẩm còn hoạt động
+          .order('SoLuong', ascending: true) // Sắp xếp theo số lượng tăng dần
+          .limit(3); // Giới hạn 3 sản phẩm
+
       if (response != null && response is List) {
-        final List<Products> fetchedProducts = response.map((e) => Products.fromMap(e)).toList();
+        final List<Products> fetchedProducts =
+        response.map((e) => Products.fromMap(e)).toList();
         setState(() {
           products = fetchedProducts;
           isLoading = false;
@@ -43,6 +54,40 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         errorMessage = 'Failed to load products: $error';
         isLoading = false;
+      });
+    }
+  }
+
+  List<Event> events = [];
+  bool isEventsLoading = true;
+  String eventsErrorMessage = '';
+
+  // Fetch events from the database
+  Future<void> fetchEvents() async {
+    try {
+      // Lấy sự kiện từ bảng 'Events'
+      final response = await supabase
+          .from('SuKien') // Sử dụng bảng 'Events' thay vì 'SanPham'
+          .select('*')
+          .eq('TrangThai', true) // Có thể thêm điều kiện nếu cần
+          .order('NgayDienRa', ascending: true); // Sắp xếp theo ngày diễn ra sự kiện
+
+      if (response != null && response is List) {
+        final List<Event> fetchedEvents = response.map((e) => Event.fromMap(e)).toList();
+        setState(() {
+          events = fetchedEvents;
+          isEventsLoading = false;
+        });
+      } else {
+        setState(() {
+          eventsErrorMessage = 'Failed to load events: Invalid response';
+          isEventsLoading = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        eventsErrorMessage = 'Failed to load events: $error';
+        isEventsLoading = false;
       });
     }
   }
@@ -84,7 +129,7 @@ class _HomePageState extends State<HomePage> {
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
-              'Vé Bán Chạy',
+              'Sản Phẩm Bán Chạy',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -93,7 +138,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          // Displaying popular tickets
+          // Hiển thị danh sách sản phẩm bán chạy
           isLoading
               ? const Center(child: CircularProgressIndicator())
               : errorMessage.isNotEmpty
@@ -102,6 +147,88 @@ class _HomePageState extends State<HomePage> {
             children: products.map((product) {
               return ProductCard(product: product);
             }).toList(),
+          ),
+
+          // Thông tin sự kiện nổi bật
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Sự Kiện Nổi Bật',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+
+          // Hiển thị sự kiện
+          isEventsLoading
+              ? const Center(child: CircularProgressIndicator()) // Hiển thị loading khi sự kiện đang được tải
+              : eventsErrorMessage.isNotEmpty
+              ? Center(child: Text(eventsErrorMessage, style: const TextStyle(color: Colors.red)))
+              : CarouselSlider(
+            options: CarouselOptions(height: 250, autoPlay: true),
+            items: events.map((event) {
+              return _buildEventCard(
+                event.ten,
+                event.ngayDienRa.toString(),
+                event.diaDiem ?? 'Địa điểm chưa có',
+                event.anh ?? 'https://via.placeholder.com/150',
+              );
+            }).toList(),
+          ),
+
+          // Đánh giá từ khách hàng
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Đánh Giá Từ Khách Hàng',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          CarouselSlider(
+            options: CarouselOptions(height: 150, autoPlay: true),
+            items: [
+              _buildReviewCard('Nguyễn Văn A', 'Vé rất rẻ và dịch vụ tuyệt vời!'),
+              _buildReviewCard('Trần Thị B', 'Trải nghiệm đáng nhớ, mình rất thích.'),
+            ],
+          ),
+
+          // Hỗ trợ khách hàng
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Hỗ Trợ Khách Hàng',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.phone, color: Colors.blue),
+            title: const Text('Liên hệ: 0909 123 456'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.email, color: Colors.blue),
+            title: const Text('Email: hotro@website.com'),
+          ),
+
+          // Blog hoặc tin tức
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Tin Tức & Blog',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.article, color: Colors.blue),
+            title: const Text('Hướng dẫn đặt vé online'),
+            onTap: () {
+              // Điều hướng đến bài viết chi tiết
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.article, color: Colors.blue),
+            title: const Text('Top sự kiện không thể bỏ qua mùa hè này'),
+            onTap: () {
+              // Điều hướng đến bài viết chi tiết
+            },
           ),
         ],
       ),
@@ -155,6 +282,73 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  // Widget to build an event card
+  Widget _buildEventCard(String title, String date, String location, String imageUrl) {
+    DateTime eventDate = DateTime.parse(date);
+    String formattedDate = DateFormat('dd/MM/yyyy').format(eventDate);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Tên sự kiện
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 8), // Khoảng cách giữa tên sự kiện và hình ảnh
+
+            // Hình ảnh dưới tên sự kiện
+            Image.network(
+              imageUrl,
+              width: double.infinity, // Chiếm hết chiều rộng của card
+              height: 120, // Đặt chiều cao hình ảnh
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.image, size: 40); // Nếu hình ảnh không có
+              },
+            ),
+
+            // Ngày và địa điểm
+            Text('$formattedDate - $location'),
+
+            // Dùng Expanded hoặc Spacer để đẩy nút xuống dưới cùng
+            Spacer(),
+
+            // Nút chi tiết ở dưới cùng bên phải
+            Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Điều hướng đến trang mua vé
+                },
+                child: const Text('Chi tiết'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewCard(String name, String review) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text(review),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class ProductCard extends StatelessWidget {
@@ -177,7 +371,7 @@ class ProductCard extends StatelessWidget {
           },
         ),
         title: Text(product.ten),
-        subtitle: Text(product.loai ?? 'Chưa có loại vé'),
+        subtitle: Text(product.loai ?? 'Chưa có loại'),
         trailing: Text('${product.gia} VND'),
         onTap: () {
           Navigator.push(
