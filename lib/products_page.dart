@@ -55,8 +55,8 @@ class _ProductsPageState extends State<ProductsPage> {
           return GridView.extent(
             maxCrossAxisExtent: 200,
             mainAxisSpacing: 5,
-            crossAxisSpacing: 5,
-            childAspectRatio: 0.75,
+            crossAxisSpacing: 4,
+            childAspectRatio: 0.5,
             children: list.map((product) {
               return Card(
                 child: Column(
