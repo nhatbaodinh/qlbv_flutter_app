@@ -43,8 +43,7 @@ class _MainLayoutState extends State<MainLayout> {
         actions: [
           GestureDetector(
             onTap: () {
-              print("Giỏ hàng được nhấn");  // Kiểm tra xem sự kiện có được gọi không
-              Get.dialog(buildCartDialog()); // Hiển thị chi tiết giỏ hàng
+              Get.to(()=>const CartDetailPage());// Hiển thị chi tiết giỏ hàng
             },
             child: GetBuilder<CartController>(
               id: 'cart',
