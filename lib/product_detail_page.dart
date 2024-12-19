@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:qlbv_flutter_app/cart_controller.dart';
+import 'package:qlbv_flutter_app/cart_detail.dart';
 import 'products_model.dart';
+import 'package:get/get.dart';
+import 'package:badges/badges.dart' as badges;
 
 class ProductDetailPage extends StatelessWidget {
   final Products product;
@@ -18,8 +22,27 @@ class ProductDetailPage extends StatelessWidget {
             color: Colors.black,
           ),
         ),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              print("Giỏ hàng được nhấn");
+              Get.dialog(buildCartDialog());
+            },
+            child: GetBuilder<CartController>(
+              id: 'cart',
+              builder: (controller) {
+                return badges.Badge(
+                  showBadge: controller.totalItems > 0,
+                  badgeContent: Text('${controller.totalItems}'),
+                  child: const Icon(Icons.shopping_cart),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 20),
+        ],
         backgroundColor: Colors.white,
-        elevation: 0, // Xóa bóng dưới AppBar
+        elevation: 0, // Remove shadow under AppBar
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
@@ -28,7 +51,7 @@ class ProductDetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Hiển thị hình ảnh sản phẩm
+              // Display product image
               product.anh != null && product.anh!.isNotEmpty
                   ? ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
@@ -64,7 +87,7 @@ class ProductDetailPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Tên vé
+              // Product name
               Text(
                 product.ten,
                 style: const TextStyle(
@@ -76,7 +99,7 @@ class ProductDetailPage extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              // Loại
+              // Product type
               Text(
                 'Loại: ${product.loai ?? 'Chưa phân loại'}',
                 style: const TextStyle(fontSize: 16, color: Colors.grey),
@@ -84,7 +107,7 @@ class ProductDetailPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Giá vé
+              // Product price
               Text(
                 'Giá: ${product.gia} VND',
                 style: const TextStyle(
@@ -96,7 +119,7 @@ class ProductDetailPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Số lượng vé còn lại
+              // Product quantity
               Text(
                 'Số lượng còn lại: ${product.soLuong}',
                 style: const TextStyle(fontSize: 18, color: Colors.black),
@@ -104,7 +127,7 @@ class ProductDetailPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Trạng thái vé
+              // Product status
               Row(
                 children: [
                   const Text(
@@ -124,23 +147,20 @@ class ProductDetailPage extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Nút mua vé và thêm vào giỏ hàng
+              // Buttons to add to cart and purchase
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SizedBox(
-                    width: 160, // Đặt độ rộng của nút
+                    width: 160, // Set width of the button
                     child: ElevatedButton(
-                      onPressed: product.trangThai
-                          ? () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Đã thêm "${product.ten}" vào giỏ hàng!'),
-                            duration: const Duration(seconds: 2),
-                          ),
+                      onPressed: () {
+                        final cartController = Get.find<CartController>();
+                        cartController.addToCart(
+                          product.ten, // Corrected argument
+                          product.gia, // Corrected argument
                         );
-                      }
-                          : null,
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: product.trangThai ? Colors.green : Colors.grey,
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -155,7 +175,7 @@ class ProductDetailPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: 150, // Đặt độ rộng của nút
+                    width: 150, // Set width of the button
                     child: ElevatedButton(
                       onPressed: product.trangThai
                           ? () {

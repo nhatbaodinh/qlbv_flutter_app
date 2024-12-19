@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:qlbv_flutter_app/product_detail_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'cart_controller.dart';
 import 'home_page.dart';
@@ -38,8 +39,8 @@ class MyApp extends StatelessWidget {
             icon: Icon(Icons.home),
           ),
           BottomNavigationBarItem(
-            label: "Vé",
-            icon: Icon(Icons.airplane_ticket),
+            label: "Sản phẩm",
+            icon: Icon(Icons.shopping_cart),
           ),
           BottomNavigationBarItem(
             label: "Đăng nhập",
