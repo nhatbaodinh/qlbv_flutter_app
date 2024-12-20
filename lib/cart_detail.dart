@@ -15,7 +15,7 @@ class CartDetailPage extends StatelessWidget {
   Future<void> requestStoragePermission() async {
     PermissionStatus status = await Permission.storage.request();
     if (!status.isGranted) {
-      Get.snackbar('Lỗi', 'Bạn cần cấp quyền lưu trữ để lưu ảnh!');
+      Get.snackbar('Lỗi', 'Bạn cần cấp quyền lưu trữ để lưu ảnh');
     }
   }
 
