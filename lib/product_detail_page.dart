@@ -191,7 +191,7 @@ class ProductDetailPage extends StatelessWidget {
                           product.gia,
                           product.anh ?? "https://via.placeholder.com/150",
                         );
-                        Get.to(() => const CartDetailPage());
+                        Get.to(() =>  CartDetailPage());
                       }
                           : null,
                       style: ElevatedButton.styleFrom(

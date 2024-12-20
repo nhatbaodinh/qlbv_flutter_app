@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:qlbv_flutter_app/products_page.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:saver_gallery/saver_gallery.dart';  // Import saver_gallery instead of image_gallery_saver
@@ -156,7 +157,10 @@ class CartDetailPage extends StatelessWidget {
                       ),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => {
+                            Navigator.pop(context),
+                            controller.clearCart(),
+                          },
                           child: const Text("Đóng"),
                         ),
                         ElevatedButton.icon(
@@ -170,6 +174,7 @@ class CartDetailPage extends StatelessWidget {
                       ],
                     ),
                   );
+
                 },
                 child: const Text("Thanh Toán"),
               ),
@@ -186,15 +191,26 @@ class CartDetailPage extends StatelessWidget {
   }
 
   String generateCartData(CartController controller) {
+    final today = DateTime.now();
+    final threeDaysLater = today.add(Duration(days: 7));
+
     final items = controller.cart
-        .map((item) => '${item.ten} x ${item.soluong}')
-        .join(', ');
+        .map((item) => '${item.ten} x ${item.soluong}') // Tên vé và số lượng
+        .join('\n'); // Đưa các vé lên dòng mới
+
     final total = formatCurrency(controller.cart.fold(
       0,
           (sum, item) => sum + (item.gia * item.soluong),
     ));
-    return 'Giỏ hàng: $items\nTổng tiền: $total';
+
+    // Định dạng thời gian
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    final startDate = dateFormat.format(today);
+    final endDate = dateFormat.format(threeDaysLater);
+
+    return 'Vé của bạn:\n$items\n\nThời hạn: $startDate đến $endDate\nTổng tiền: $total';
   }
+
 
   Future<void> saveQrCode() async {
     try {
