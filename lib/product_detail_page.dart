@@ -59,36 +59,36 @@ class ProductDetailPage extends StatelessWidget {
               // Display product image
               product.anh != null && product.anh!.isNotEmpty
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        product.anh!,
-                        height: 200,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Center(
-                            child: Icon(
-                              Icons.broken_image,
-                              size: 150,
-                              color: Colors.grey,
-                            ),
-                          );
-                        },
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  product.anh!,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        size: 150,
+                        color: Colors.grey,
                       ),
-                    )
+                    );
+                  },
+                ),
+              )
                   : Container(
-                      height: 200,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: const Icon(
-                        Icons.image_not_supported,
-                        size: 100,
-                        color: Colors.white,
-                      ),
-                    ),
+                height: 200,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: const Icon(
+                  Icons.image_not_supported,
+                  size: 100,
+                  color: Colors.white,
+                ),
+              ),
 
               const SizedBox(height: 16),
 
@@ -161,11 +161,10 @@ class ProductDetailPage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         final cartController = Get.find<CartController>();
-                        // Provide a fallback for anh if it's null
                         cartController.addToCart(
-                          product.ten, // Product name
-                          product.gia, // Product price
-                          product.anh ?? "https://via.placeholder.com/150", // Provide default image URL if anh is null
+                          product.ten,
+                          product.gia,
+                          product.anh ?? "https://via.placeholder.com/150",
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -185,13 +184,14 @@ class ProductDetailPage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: product.trangThai
                           ? () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Mua vé "${product.ten}" thành công!'),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            }
+                        final cartController = Get.find<CartController>();
+                        cartController.addToCart(
+                          product.ten,
+                          product.gia,
+                          product.anh ?? "https://via.placeholder.com/150",
+                        );
+                        Get.to(() => const CartDetailPage());
+                      }
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: product.trangThai ? Colors.blue : Colors.grey,
