@@ -29,25 +29,6 @@ class ProductDetailPage extends StatelessWidget {
             color: Colors.black,
           ),
         ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              print("Giỏ hàng được nhấn");
-              Get.dialog(buildCartDialog());
-            },
-            child: GetBuilder<CartController>(
-              id: 'cart',
-              builder: (controller) {
-                return badges.Badge(
-                  showBadge: controller.totalItems > 0,
-                  badgeContent: Text('${controller.totalItems}'),
-                  child: const Icon(Icons.shopping_cart),
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 20),
-        ],
         backgroundColor: Colors.white,
         elevation: 0, // Remove shadow under AppBar
         iconTheme: const IconThemeData(color: Colors.black),
