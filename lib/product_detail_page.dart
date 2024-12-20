@@ -28,10 +28,13 @@ class ProductDetailPage extends StatelessWidget {
             color: Colors.black,
           ),
         ),
+        backgroundColor: Colors.white,
+        elevation: 0, // Remove shadow under AppBar
+        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           GestureDetector(
             onTap: () {
-              Get.to(() => const CartDetailPage()); // Hiển thị chi tiết giỏ hàng
+              Get.to(()=>  CartDetailPage());// Hiển thị chi tiết giỏ hàng
             },
             child: GetBuilder<CartController>(
               id: 'cart',
@@ -44,11 +47,9 @@ class ProductDetailPage extends StatelessWidget {
               },
             ),
           ),
+
           const SizedBox(width: 20),
         ],
-        backgroundColor: Colors.white,
-        elevation: 0, // Remove shadow under AppBar
-        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
         child: Padding(

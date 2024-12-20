@@ -71,17 +71,17 @@ class _ProductsPageState extends State<ProductsPage> {
                       const SizedBox(height: 8.0),
                       Text(
                         product.products.ten ,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 4.0),
                       Text(
                         formatCurrency(product.products.gia),
-                        style: const TextStyle(color: Colors.green),
+                        style: const TextStyle(color: Colors.green,fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 4.0),
-
+                      Text('Loại: ${product.products.loai}',style: TextStyle(color: Colors.grey),)
 
                     ],
                   ),

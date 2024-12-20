@@ -1,10 +1,24 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:saver_gallery/saver_gallery.dart';  // Import saver_gallery instead of image_gallery_saver
 import 'cart_controller.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CartDetailPage extends StatelessWidget {
-  const CartDetailPage({Key? key}) : super(key: key);
+  CartDetailPage({Key? key}) : super(key: key);
+
+  Future<void> requestStoragePermission() async {
+    PermissionStatus status = await Permission.storage.request();
+    if (!status.isGranted) {
+      Get.snackbar('Lỗi', 'Bạn cần cấp quyền lưu trữ để lưu ảnh!');
+    }
+  }
+
+  final ScreenshotController screenshotController = ScreenshotController(); // Controller để chụp màn hình
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +43,9 @@ class CartDetailPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final cartItem = controller.cart[index];
                     return Dismissible(
-                      key: Key(cartItem.ten), // Unique key for each item
-                      direction: DismissDirection.endToStart, // Swipe direction
+                      key: Key(cartItem.ten),
+                      direction: DismissDirection.endToStart,
                       onDismissed: (direction) {
-                        // Remove the item when swiped
                         controller.removeItem(index);
                         Get.snackbar('Đã xóa', '${cartItem.ten} đã được xóa khỏi giỏ hàng');
                       },
@@ -46,7 +59,6 @@ class CartDetailPage extends StatelessWidget {
                         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         child: Row(
                           children: [
-                            // Hình ảnh sản phẩm
                             Container(
                               width: 80,
                               height: 80,
@@ -74,7 +86,6 @@ class CartDetailPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            // Nút + và -
                             Row(
                               children: [
                                 IconButton(
@@ -126,7 +137,39 @@ class CartDetailPage extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  print("Thanh toán được nhấn!");
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      scrollable: true,
+                      title: const Text("Vé Tham Quan"),
+                      content: Screenshot(
+                        controller: screenshotController,
+                        child: SizedBox(
+                          width: 250,
+                          height: 250,
+                          child: QrImageView(
+                            data: generateCartData(controller),
+                            version: QrVersions.auto,
+                            size: 200.0,
+                          ),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Đóng"),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            await requestStoragePermission();
+                            saveQrCode();
+                          },
+                          icon: const Icon(Icons.save),
+                          label: const Text("Lưu Mã QR"),
+                        ),
+                      ],
+                    ),
+                  );
                 },
                 child: const Text("Thanh Toán"),
               ),
@@ -137,9 +180,40 @@ class CartDetailPage extends StatelessWidget {
     );
   }
 
-  // Improved formatCurrency function using intl package
   String formatCurrency(int amount) {
-    final formatter = NumberFormat('#,##0', 'vi_VN'); // Using intl package for better formatting
+    final formatter = NumberFormat('#,##0', 'vi_VN');
     return '${formatter.format(amount)} VND';
+  }
+
+  String generateCartData(CartController controller) {
+    final items = controller.cart
+        .map((item) => '${item.ten} x ${item.soluong}')
+        .join(', ');
+    final total = formatCurrency(controller.cart.fold(
+      0,
+          (sum, item) => sum + (item.gia * item.soluong),
+    ));
+    return 'Giỏ hàng: $items\nTổng tiền: $total';
+  }
+
+  Future<void> saveQrCode() async {
+    try {
+      final image = await screenshotController.capture();
+      if (image != null) {
+        final result = await SaverGallery.saveImage(
+          Uint8List.fromList(image),
+          fileName: 'QRCode',
+          quality: 100,
+          skipIfExists: true
+        );
+        if (result==true) {
+          Get.snackbar('Thành công', 'Mã QR đã được lưu vào thư viện!');
+        } else {
+          Get.snackbar('Lỗi', 'Không thể lưu mã QR!');
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 }
