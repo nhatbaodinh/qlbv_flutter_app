@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:qlbv_flutter_app/product_detail_page.dart';
+import 'package:qlbv_flutter_app/register_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'cart_controller.dart';
 import 'home_page.dart';
