@@ -15,7 +15,7 @@ class CartDetailPage extends StatelessWidget {
   Future<void> requestStoragePermission() async {
     PermissionStatus status = await Permission.storage.request();
     if (!status.isGranted) {
-      Get.snackbar('Lỗi', 'Bạn cần cấp quyền lưu trữ để lưu ảnh!');
+      Get.snackbar('Lỗi', 'Bạn cần cấp quyền lưu trữ để lưu ảnh');
     }
   }
 
@@ -166,7 +166,7 @@ class CartDetailPage extends StatelessWidget {
                         ElevatedButton.icon(
                           onPressed: () async {
                             await requestStoragePermission();
-                            saveQrCode();
+                            // saveQrCode();
                           },
                           icon: const Icon(Icons.save),
                           label: const Text("Lưu Mã QR"),
@@ -212,24 +212,24 @@ class CartDetailPage extends StatelessWidget {
   }
 
 
-  Future<void> saveQrCode() async {
-    try {
-      final image = await screenshotController.capture();
-      if (image != null) {
-        final result = await SaverGallery.saveImage(
-          Uint8List.fromList(image),
-          fileName: 'QRCode',
-          quality: 100,
-          skipIfExists: true
-        );
-        if (result==true) {
-          Get.snackbar('Thành công', 'Mã QR đã được lưu vào thư viện!');
-        } else {
-          Get.snackbar('Lỗi', 'Không thể lưu mã QR!');
-        }
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
+  // Future<void> saveQrCode() async {
+  //   try {
+  //     final image = await screenshotController.capture();
+  //     if (image != null) {
+  //       final result = await SaverGallery.saveImage(
+  //         Uint8List.fromList(image),
+  //         fileName: 'QRCode',
+  //         quality: 100,
+  //         skipIfExists: true
+  //       );
+  //       if (result==true) {
+  //         Get.snackbar('Thành công', 'Mã QR đã được lưu vào thư viện!');
+  //       } else {
+  //         Get.snackbar('Lỗi', 'Không thể lưu mã QR!');
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 }
