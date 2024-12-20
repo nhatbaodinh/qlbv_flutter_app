@@ -39,6 +39,10 @@ class CartController extends GetxController {
     cart.removeAt(index);
     update(['cart']);
   }
+  void clearCart(){
+    cart.clear();
+    update(['cart']);
+  }
 
 
   int get totalItems => cart.fold(0, (sum, item) => sum + item.soluong);

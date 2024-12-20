@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:qlbv_flutter_app/products_page.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:saver_gallery/saver_gallery.dart';  // Import saver_gallery instead of image_gallery_saver
@@ -170,6 +171,8 @@ class CartDetailPage extends StatelessWidget {
                       ],
                     ),
                   );
+                  controller.clearCart();
+
                 },
                 child: const Text("Thanh Toán"),
               ),
