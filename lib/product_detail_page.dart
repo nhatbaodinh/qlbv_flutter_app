@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'cart_controller.dart';
 import 'cart_detail.dart';
@@ -11,11 +10,11 @@ class ProductDetailPage extends StatelessWidget {
   final Products product;
 
   const ProductDetailPage({Key? key, required this.product}) : super(key: key);
+
   String formatCurrency(int amount) {
     final formatter = NumberFormat.decimalPattern(); // Định dạng theo hệ thập phân
     return "${formatter.format(amount)} VND";
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +31,7 @@ class ProductDetailPage extends StatelessWidget {
         actions: [
           GestureDetector(
             onTap: () {
-              print("Giỏ hàng được nhấn");
-              Get.dialog(buildCartDialog());
+              Get.to(() => const CartDetailPage()); // Hiển thị chi tiết giỏ hàng
             },
             child: GetBuilder<CartController>(
               id: 'cart',
@@ -51,25 +49,6 @@ class ProductDetailPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0, // Remove shadow under AppBar
         iconTheme: const IconThemeData(color: Colors.black),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Get.to(()=>const CartDetailPage());// Hiển thị chi tiết giỏ hàng
-            },
-            child: GetBuilder<CartController>(
-              id: 'cart',
-              builder: (controller) {
-                return badges.Badge(
-                  showBadge: controller.totalItems > 0,
-                  badgeContent: Text('${controller.totalItems}'),
-                  child: const Icon(Icons.shopping_cart),
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(width: 20),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -80,36 +59,36 @@ class ProductDetailPage extends StatelessWidget {
               // Display product image
               product.anh != null && product.anh!.isNotEmpty
                   ? ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  product.anh!,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(
-                      child: Icon(
-                        Icons.broken_image,
-                        size: 150,
-                        color: Colors.grey,
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        product.anh!,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 150,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              )
+                    )
                   : Container(
-                height: 200,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: const Icon(
-                  Icons.image_not_supported,
-                  size: 100,
-                  color: Colors.white,
-                ),
-              ),
+                      height: 200,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 100,
+                        color: Colors.white,
+                      ),
+                    ),
 
               const SizedBox(height: 16),
 
@@ -180,16 +159,15 @@ class ProductDetailPage extends StatelessWidget {
                   SizedBox(
                     width: 160, // Set width of the button
                     child: ElevatedButton(
-                        onPressed: () {
-                          final cartController = Get.find<CartController>();
-                          // Provide a fallback for anh if it's null
-                          cartController.addToCart(
-                            product.ten, // Product name
-                            product.gia, // Product price
-                            product.anh ?? "https://via.placeholder.com/150", // Provide default image URL if anh is null
-                          );
-                        },
-
+                      onPressed: () {
+                        final cartController = Get.find<CartController>();
+                        // Provide a fallback for anh if it's null
+                        cartController.addToCart(
+                          product.ten, // Product name
+                          product.gia, // Product price
+                          product.anh ?? "https://via.placeholder.com/150", // Provide default image URL if anh is null
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: product.trangThai ? Colors.green : Colors.grey,
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -207,13 +185,13 @@ class ProductDetailPage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: product.trangThai
                           ? () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Mua vé "${product.ten}" thành công!'),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Mua vé "${product.ten}" thành công!'),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            }
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: product.trangThai ? Colors.blue : Colors.grey,
