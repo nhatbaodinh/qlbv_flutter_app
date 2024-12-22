@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'home_controller.dart';
 import 'products_model.dart';
 import 'product_detail_page.dart';
@@ -64,6 +65,28 @@ class _HomePageState extends State<HomePage> {
         eventsErrorMessage = error.toString();
         isEventsLoading = false;
       });
+    }
+  }
+
+  // Hàm gọi điện
+  void callSupport() async {
+    const phoneNumber = '0909123456';
+    final success = await launchUrlString('tel:$phoneNumber');
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không thể thực hiện cuộc gọi')),
+      );
+    }
+  }
+
+  // Hàm gửi email
+  void emailSupport() async {
+    const email = 'hotro@mail.com';
+    final success = await launchUrlString('mailto:$email');
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không thể mở ứng dụng email')),
+      );
     }
   }
 
@@ -174,13 +197,19 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
-          const ListTile(
-            leading: Icon(Icons.phone, color: Colors.blue),
-            title: Text('Liên hệ: 0909 123 456'),
+          ListTile(
+            leading: const Icon(Icons.phone, color: Colors.blue),
+            title: const Text('Liên hệ: 0909 123 456'),
+            onTap: () {
+              callSupport();
+            },
           ),
-          const ListTile(
-            leading: Icon(Icons.email, color: Colors.blue),
-            title: Text('Email: hotro@website.com'),
+          ListTile(
+            leading: const Icon(Icons.email, color: Colors.blue),
+            title: const Text('Email: hotro@website.com'),
+            onTap: () {
+              emailSupport();
+            },
           ),
 
           // Blog hoặc tin tức
