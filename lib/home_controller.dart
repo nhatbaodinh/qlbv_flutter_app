@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'products_model.dart';
 import 'events_model.dart';
 
@@ -14,10 +15,10 @@ class HomeController {
           .order('SoLuong', ascending: true)
           .limit(3);
 
-      if (response != null && response is List) {
+      if (response is List) {
         return response.map((e) => Products.fromMap(e)).toList();
       } else {
-        throw Exception('Failed to load products: Invalid response');
+        throw Exception('Invalid product response');
       }
     } catch (error) {
       throw Exception('Failed to load products: $error');
@@ -32,10 +33,10 @@ class HomeController {
           .eq('TrangThai', true)
           .order('NgayDienRa', ascending: true);
 
-      if (response != null && response is List) {
+      if (response is List) {
         return response.map((e) => Event.fromMap(e)).toList();
       } else {
-        throw Exception('Failed to load events: Invalid response');
+        throw Exception('Invalid event response');
       }
     } catch (error) {
       throw Exception('Failed to load events: $error');
