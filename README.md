@@ -31,3 +31,38 @@
 
 - **Flutter**: Cần cài đặt Flutter SDK phiên bản mới nhất.
 - **Dart**: Phiên bản Dart tương thích với Flutter.
+
+## 🚀 Cài Đặt Ứng Dụng
+
+### Bước 1: Clone Dự Án
+Sử dụng Git để clone dự án từ GitHub về máy của bạn:
+```bash
+git clone https://github.com/username/qlbv_flutter_app.git
+cd qlbv_flutter_app
+```
+
+### Bước 2: Cài Đặt Dependencies
+Sử dụng lệnh sau để cài đặt các dependencies cần thiết cho ứng dụng:
+```bash
+flutter pub get
+```
+
+### Bước 3: Cấu Hình Supabase
+Cấu hình lib/main.dart với thông tin của Supabase:
+```dart
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+void main() async {
+  await Supabase.initialize(
+    url: 'https://your-supabase-url.supabase.co',
+    anonKey: 'your-supabase-api-key',
+  );
+  runApp(MyApp());
+}
+```
+
+### Bước 4: Chạy Ứng Dụng
+Cuối cùng, sử dụng lệnh sau để chạy ứng dụng trên thiết bị hoặc máy ảo:
+```bash
+flutter run
+```
