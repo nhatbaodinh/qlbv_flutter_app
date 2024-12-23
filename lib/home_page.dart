@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:get/get.dart'; // Import Get package
 import 'home_controller.dart';
 import 'products_model.dart';
 import 'product_detail_page.dart';
 import 'events_model.dart';
+import 'cart_controller.dart'; // Import CartController
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -300,9 +302,30 @@ class _HomePageState extends State<HomePage> {
             return const Icon(Icons.image, size: 50); // Fallback icon if image fails
           },
         ),
-        title: Text(product.ten),
-        subtitle: Text(product.loai ?? 'Chưa có loại'),
-        trailing:Text(formatCurrency(product.gia)),
+        title: Text(product.ten, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(product.loai ?? 'Chưa có loại', style: const TextStyle(color: Colors.red)),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(formatCurrency(product.gia)),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.add_circle, color: Colors.green),
+              onPressed: () {
+                // Xử lý thêm vào giỏ hàng
+                final cartController = Get.find<CartController>();
+                cartController.addToCart(
+                  product.ten,
+                  product.gia,
+                  product.anh ?? "https://via.placeholder.com/150",
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Đã thêm ${product.ten} vào giỏ hàng!')),
+                );
+              },
+            ),
+          ],
+        ),
         onTap: () {
           Navigator.push(
             context,
@@ -353,10 +376,9 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   // Handle event detail navigation
                 },
-                child:
-                const Text(
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    'Chi tiết'
+                child: const Text(
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  'Chi tiết'
                 ),
               ),
             ),
