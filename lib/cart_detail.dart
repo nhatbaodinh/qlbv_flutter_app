@@ -142,7 +142,7 @@ class CartDetailPage extends StatelessWidget {
                     context: context,
                     builder: (_) => AlertDialog(
                       scrollable: true,
-                      title: const Text("Vé Tham Quan"),
+                      title: const Text("Mã đơn"),
                       content: Screenshot(
                         controller: screenshotController,
                         child: SizedBox(
@@ -208,7 +208,7 @@ class CartDetailPage extends StatelessWidget {
     final startDate = dateFormat.format(today);
     final endDate = dateFormat.format(threeDaysLater);
 
-    return 'Vé của bạn:\n$items\n\nThời hạn: $startDate đến $endDate\nTổng tiền: $total';
+    return 'Sản phẩm của bạn:\n$items\n\nThời hạn: $startDate đến $endDate\nTổng tiền: $total';
   }
 
 
