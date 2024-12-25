@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:qlbv_flutter_app/home_page.dart';
 import 'package:qlbv_flutter_app/main.dart';
+import 'package:qlbv_flutter_app/main_layout.dart';
+import 'package:qlbv_flutter_app/products_page.dart';
 import 'package:qlbv_flutter_app/register_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -38,7 +42,30 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Đăng nhập thành công!')),
         );
-        // TODO: Điều hướng đến trang chính
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainLayout(
+            pages: const [
+              HomePage(),
+              ProductsPage(),
+              LoginPage()
+            ],
+            navItems: [
+              const BottomNavigationBarItem(
+                label: "Trang chủ",
+                icon: Icon(Icons.home),
+              ),
+              const BottomNavigationBarItem(
+                label: "Sản phẩm",
+                icon: Icon(Icons.shopping_cart),
+              ),
+              BottomNavigationBarItem(
+                label: "Đăng nhập",
+                icon: Icon(Icons.login),
+              ),
+            ],
+          )),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Tài khoản không tồn tại hoặc mật khẩu sai!')),

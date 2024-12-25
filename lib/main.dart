@@ -19,7 +19,7 @@ Future<void> main() async {
 }
 
 final supabase = Supabase.instance.client;
-
+final user = Supabase.instance.client.auth.currentUser;
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -44,8 +44,8 @@ class MyApp extends StatelessWidget {
             icon: Icon(Icons.shopping_cart),
           ),
           BottomNavigationBarItem(
-            label: "Đăng nhập",
-            icon: Icon(Icons.login),
+            label: "Đăng nhập" ,
+            icon:  Icon(Icons.login),
           ),
         ],
       ),

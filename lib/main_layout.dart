@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'cart_controller.dart';
-import 'cart_detail.dart'; // Đảm bảo import file cart_detail.dart
+import 'cart_detail.dart';
+import 'login_page.dart'; // Đảm bảo import file cart_detail.dart
 
 class MainLayout extends StatefulWidget {
   final List<Widget> pages;
@@ -37,6 +39,7 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Supabase.instance.client.auth.currentUser;
     return Scaffold(
       appBar: AppBar(
         title: Text("Ứng dụng mua vé"),

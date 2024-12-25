@@ -23,24 +23,40 @@ class CartController extends GetxController {
   final cart = <CartItem>[].obs;
   final supabase = Supabase.instance.client;
   Future<void> addToCart(String ten, int gia, String anh) async {
-    String currentUser = supabase.auth.currentUser?.email ?? "guest@gmail.com";
-    final itemIndex = cart.indexWhere((item) => item.ten == ten);
-    if (itemIndex >= 0) {
-      // Nếu có, tăng số lượng
-      cart[itemIndex].soluong += 1;
-    } else {
-      // Nếu chưa, thêm mới sản phẩm
-      cart.add(CartItem(ten: ten, soluong: 1, gia: gia,anh: anh?? "https://via.placeholder.com/150", email: currentUser,ngaytao: DateTime.now()));
-      final itemData={
-        'tenSP':ten,
-        'soLuong':1,
-        'gia':gia,
-        'anh':anh,
-        'user_email':currentUser
-      };
-      await supabase.from('CartItem').insert(itemData);
+    try{
+      String currentUser = supabase.auth.currentUser?.email ?? "guest@gmail.com";
+      final response = await supabase
+          .from('CartItem')
+          .select('id, soLuong')
+          .eq('tenSP', ten)
+          .eq('user_email', currentUser)
+          .maybeSingle();
+      if(response!=null){
+        int updatedQuantity = (response['soLuong'] as int)+1;
+        await supabase.from('CartItem').update({'soLuong': updatedQuantity}).eq('user_email', currentUser).eq('tenSP', ten);
+      }
+      final itemIndex = cart.indexWhere((item) => item.ten == ten);
+      if (itemIndex >= 0) {
+        // Nếu có, tăng số lượng
+        cart[itemIndex].soluong +=1;
+      }
+      else {
+        // Nếu chưa, thêm mới sản phẩm
+        cart.add(CartItem(ten: ten, soluong: 1, gia: gia,anh: anh?? "https://via.placeholder.com/150", email: currentUser,ngaytao: DateTime.now()));
+        final itemData={
+          'tenSP':ten,
+          'soLuong':1,
+          'gia':gia,
+          'anh':anh,
+          'user_email':currentUser
+        };
+        await supabase.from('CartItem').insert(itemData);
+      }
+      update(['cart']);
+    }catch(e){
+      print(e);
     }
-    update(['cart']);
+
   }
   void updateQuantity(int index, int newQuantity) {
     if (newQuantity > 0) {
