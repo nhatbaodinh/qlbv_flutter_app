@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
       // Kiểm tra kết quả đăng nhập
       if (response.session != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đăng nhập thành công!')),
+          const SnackBar(content: Text('Đăng n  hập thành công!')),
         );
         Navigator.pushReplacement(
           context,
