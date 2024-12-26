@@ -319,9 +319,6 @@ class _HomePageState extends State<HomePage> {
                   product.gia,
                   product.anh ?? "https://via.placeholder.com/150",
                 );
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Đã thêm ${product.ten} vào giỏ hàng!')),
-                );
               },
             ),
           ],
