@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'cart_controller.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -26,7 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final fullName = fullNameController.text.trim();
     final phone = phoneController.text.trim();
     final address = addressController.text.trim();
-
+    final CartController cartController = Get.find<CartController>();
     // Kiểm tra thông tin đầu vào
     if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty || fullName.isEmpty || phone.isEmpty || address.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -60,10 +64,12 @@ class _RegisterPageState extends State<RegisterPage> {
           'Role': 'user', // Hoặc bạn có thể xác định role theo logic của bạn
         };
         await supabase.from('Users').insert(userData);
+        final check = await supabase.from('Users').select();
+        print(check);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Đăng ký thành công!')),
         );
-
+        cartController.clearCart();
         // Điều hướng quay lại trang đăng nhập
         Navigator.pop(context);
       } else {

@@ -159,7 +159,7 @@ class CartDetailPage extends StatelessWidget {
                         TextButton(
                           onPressed: () => {
                             Navigator.pop(context),
-                            controller.clearCart(),
+                            controller.clearCartafterPay(),
                           },
                           child: const Text("Đóng"),
                         ),

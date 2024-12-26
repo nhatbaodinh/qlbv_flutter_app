@@ -29,6 +29,7 @@ class _MainLayoutState extends State<MainLayout> {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
     Get.put(CartController()); // Khởi tạo CartController
+    Get.find<CartController>().fetchCartItems(); // Lấy dữ liệu giỏ hàng
   }
 
   @override
@@ -61,6 +62,8 @@ class _MainLayoutState extends State<MainLayout> {
           ),
 
           const SizedBox(width: 20),
+
+
         ],
       ),
       body: PageView(
