@@ -64,8 +64,6 @@ class _RegisterPageState extends State<RegisterPage> {
           'Role': 'user', // Hoặc bạn có thể xác định role theo logic của bạn
         };
         await supabase.from('Users').insert(userData);
-        final check = await supabase.from('Users').select();
-        print(check);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Đăng ký thành công!')),
         );

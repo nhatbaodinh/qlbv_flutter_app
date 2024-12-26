@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:qlbv_flutter_app/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CartItem {
@@ -23,9 +24,16 @@ class CartItem {
 class CartController extends GetxController {
   final cart = <CartItem>[].obs;
   final supabase = Supabase.instance.client;
+
+  Future<String> getCurrentUserEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userEmail') ?? 'guest@gmail.com'; // Default to guest if not found
+  }
+
   Future<void> fetchCartItems() async {
     try {
       var currentUser = await getCurrentUserEmail();
+      print(currentUser);
       final response = await supabase
           .from('CartItem')
           .select('soLuong, tenSP, gia, anh, created_at, user_email')
@@ -52,11 +60,8 @@ class CartController extends GetxController {
 
   Future<void> addToCart(String ten, int gia, String anh) async {
     try {
-      // Lấy email người dùng hiện tại
-      var currentUser = await getCurrentUserEmail();
-      print("Current User: $currentUser");
+      var currentUser = await getCurrentUserEmail();  // Await the value here
 
-      // Truy vấn sản phẩm từ bảng `CartItem`
       final response = await supabase
           .from('CartItem')
           .select('id, soLuong')
@@ -77,7 +82,6 @@ class CartController extends GetxController {
           cart[itemIndex].soluong = updatedQuantity;
         }
       } else {
-        // Nếu sản phẩm chưa tồn tại, thêm mới vào bảng và giỏ hàng
         final newItem = CartItem(
           ten: ten,
           soluong: 1,
@@ -95,11 +99,9 @@ class CartController extends GetxController {
           'user_email': currentUser,
         });
 
-        // Thêm vào danh sách giỏ hàng (UI)
         cart.add(newItem);
       }
 
-      // Cập nhật UI
       update(['cart']);
     } catch (e) {
       print("Error in addToCart: $e");
@@ -109,23 +111,17 @@ class CartController extends GetxController {
   Future<void> updateQuantity(int index, int newQuantity) async {
     if (newQuantity > 0) {
       try {
-        // Lấy email người dùng hiện tại
-        var currentUser = await getCurrentUserEmail();
+        var currentUser = await getCurrentUserEmail();  // Await the value here
 
-        // Lấy thông tin sản phẩm cần cập nhật từ giỏ hàng
         final cartItem = cart[index];
 
-        // Cập nhật số lượng trong bảng CartItem
         await supabase
             .from('CartItem')
             .update({'soLuong': newQuantity})
             .eq('tenSP', cartItem.ten)
             .eq('user_email', currentUser);
 
-        // Cập nhật số lượng trong danh sách giỏ hàng (UI)
         cart[index].soluong = newQuantity;
-
-        // Cập nhật UI
         update(['cart']);
       } catch (e) {
         print("Error updating quantity: $e");
@@ -137,68 +133,52 @@ class CartController extends GetxController {
 
   Future<void> removeItem(int index) async {
     try {
-      // Lấy email người dùng hiện tại
-      var currentUser = await getCurrentUserEmail();
+      var currentUser = await getCurrentUserEmail();  // Await the value here
 
-      // Lấy thông tin sản phẩm cần xóa
       final cartItem = cart[index];
 
-      // Xóa sản phẩm khỏi bảng CartItem trên Supabase
       await supabase
           .from('CartItem')
           .delete()
           .eq('tenSP', cartItem.ten)
           .eq('user_email', currentUser);
 
-      // Xóa sản phẩm khỏi danh sách giỏ hàng (UI)
       cart.removeAt(index);
-
-      // Cập nhật UI
       update(['cart']);
     } catch (e) {
       print("Error removing item: $e");
     }
   }
 
-
   void clearCart() {
     cart.clear();
     update();
   }
+
   Future<void> clearCartafterPay() async {
     try {
-      // Lấy email người dùng hiện tại
-      var currentUser = await getCurrentUserEmail();
-
-      // Xóa toàn bộ sản phẩm thuộc người dùng hiện tại trong bảng CartItem
+      var currentUser = await getCurrentUserEmail();  // Await the value here
       await supabase
           .from('CartItem')
           .delete()
           .eq('user_email', currentUser);
 
-      // Xóa toàn bộ sản phẩm khỏi danh sách giỏ hàng (UI)
       cart.clear();
-
-      // Cập nhật UI
       update(['cart']);
     } catch (e) {
       print("Error clearing cart after payment: $e");
     }
   }
 
-
   Future<int> fetchTotalItems() async {
     try {
-      // Lấy email người dùng hiện tại
-      var currentUser = await getCurrentUserEmail();
+      var currentUser = await getCurrentUserEmail();  // Await the value here
 
-      // Truy vấn tất cả sản phẩm thuộc email người dùng
       final List<dynamic> response = await supabase
           .from('CartItem')
           .select('soLuong')
           .eq('user_email', currentUser);
 
-      // Tính tổng số lượng sản phẩm
       final total = response.fold<int>(0, (sum, item) => sum + (item['soLuong'] as int));
       return total;
     } catch (e) {
@@ -206,8 +186,8 @@ class CartController extends GetxController {
       return 0;
     }
   }
-  int get totalItems => cart.fold(0, (sum, item) => sum + item.soluong);
 
+  int get totalItems => cart.fold(0, (sum, item) => sum + item.soluong);
 }
 
 class CartBinding extends Bindings {

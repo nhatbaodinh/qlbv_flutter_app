@@ -2,10 +2,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:qlbv_flutter_app/main.dart';
 import 'package:qlbv_flutter_app/products_page.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:saver_gallery/saver_gallery.dart';  // Import saver_gallery instead of image_gallery_saver
+import 'package:shared_preferences/shared_preferences.dart';
 import 'cart_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -20,7 +22,10 @@ class CartDetailPage extends StatelessWidget {
   }
 
   final ScreenshotController screenshotController = ScreenshotController(); // Controller để chụp màn hình
-
+  Future<String> getCurrentUserEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userEmail') ?? 'guest@gmail.com'; // Default to guest if not found
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,47 +142,62 @@ class CartDetailPage extends StatelessWidget {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                      scrollable: true,
-                      title: const Text("Mã đơn"),
-                      content: Screenshot(
-                        controller: screenshotController,
-                        child: SizedBox(
-                          width: 250,
-                          height: 250,
-                          child: QrImageView(
-                            data: generateCartData(controller),
-                            version: QrVersions.auto,
-                            size: 200.0,
+                onPressed: () async {
+                  // Kiểm tra trạng thái đăng nhập của người dùng
+                  var currentUser = await getCurrentUserEmail();
+
+                  if (currentUser == 'guest@gmail.com') {
+                    // Nếu người dùng là khách, thông báo yêu cầu đăng nhập
+                    Get.snackbar(
+                      "Thông báo",
+                      "Bạn phải đăng nhập để thực hiện thao tác này.",
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  } else {
+                    // Nếu người dùng không phải là khách, hiển thị mã QR và xóa giỏ hàng
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        scrollable: true,
+                        title: const Text("Mã đơn"),
+                        content: Screenshot(
+                          controller: screenshotController,
+                          child: SizedBox(
+                            width: 250,
+                            height: 250,
+                            child: QrImageView(
+                              data: generateCartData(controller),
+                              version: QrVersions.auto,
+                              size: 200.0,
+                            ),
                           ),
                         ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => {
+                              Navigator.pop(context),
+                              controller.clearCartafterPay(), // Xóa giỏ hàng sau khi thanh toán
+                            },
+                            child: const Text("Đóng"),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              await requestStoragePermission();
+                              // saveQrCode();  // Gọi hàm lưu mã QR nếu cần
+                            },
+                            icon: const Icon(Icons.save),
+                            label: const Text("Lưu Mã QR"),
+                          ),
+                        ],
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => {
-                            Navigator.pop(context),
-                            controller.clearCartafterPay(),
-                          },
-                          child: const Text("Đóng"),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () async {
-                            await requestStoragePermission();
-                            // saveQrCode();
-                          },
-                          icon: const Icon(Icons.save),
-                          label: const Text("Lưu Mã QR"),
-                        ),
-                      ],
-                    ),
-                  );
-
+                    );
+                  }
                 },
                 child: const Text("Thanh Toán"),
               ),
+
             ],
           );
         },
