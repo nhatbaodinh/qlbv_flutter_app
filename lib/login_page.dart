@@ -6,8 +6,8 @@ import 'package:qlbv_flutter_app/main.dart';
 import 'package:qlbv_flutter_app/main_layout.dart';
 import 'package:qlbv_flutter_app/products_page.dart';
 import 'package:qlbv_flutter_app/register_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'cart_controller.dart';
 
 
@@ -21,12 +21,17 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
+  Future<String?> getUserEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Lấy giá trị 'userEmail' từ SharedPreferences
+    return prefs.getString('userEmail');
+  }
   // Hàm xử lý đăng nhập (tạm thời chỉ in thông tin)
   void handleLogin() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final CartController cartController = Get.find<CartController>();
+
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin!')),
@@ -46,31 +51,66 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Đăng nhập thành công!')),
         );
-        cartController.clearCart();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainLayout(
-            pages: const [
-              HomePage(),
-              ProductsPage(),
-              LoginPage()
-            ],
-            navItems: [
-              const BottomNavigationBarItem(
-                label: "Trang chủ",
-                icon: Icon(Icons.home),
+
+        // Lưu email vào SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userEmail', email);
+
+        // Query to get user role from the Users table
+        final userResponse = await supabase
+            .from('Users')
+            .select('Role')
+            .eq('email', email)
+            .maybeSingle();
+
+        // Check if userResponse is not null
+        if (userResponse != null) {
+          String userRole = userResponse['Role'] as String;
+
+          // Lưu role vào SharedPreferences (hoặc GetX state management nếu cần)
+          await prefs.setString('userRole', userRole);
+
+          // Cập nhật CartItem bảng với email người dùng
+          await supabase
+              .from('CartItem')
+              .update({'user_email': email}) // Cập nhật cột user_email thành email hiện tại
+              .eq('user_email', 'guest@gmail.com');
+
+          cartController.clearCart(); // Reset the cart for the logged-in user
+
+          // Chuyển hướng đến MainLayout sau khi đăng nhập thành công
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MainLayout(
+                pages: [
+                  HomePage(),
+                  ProductsPage(),
+                  LoginPage(),
+                ],
+                navItems: [
+                  BottomNavigationBarItem(
+                    label: "Trang chủ",
+                    icon: Icon(Icons.home),
+                  ),
+                  BottomNavigationBarItem(
+                    label: "Sản phẩm",
+                    icon: Icon(Icons.shopping_cart),
+                  ),
+                  BottomNavigationBarItem(
+                    label: "Tôi",
+                    icon: Icon(Icons.login),
+                  ),
+                ],
               ),
-              const BottomNavigationBarItem(
-                label: "Sản phẩm",
-                icon: Icon(Icons.shopping_cart),
-              ),
-              BottomNavigationBarItem(
-                label: "Đăng nhập",
-                icon: Icon(Icons.login),
-              ),
-            ],
-          )),
-        );
+            ),
+          );
+        } else {
+          // User not found or error with response
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Không thể lấy thông tin người dùng!')),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Tài khoản không tồn tại hoặc mật khẩu sai!')),
@@ -88,6 +128,8 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
