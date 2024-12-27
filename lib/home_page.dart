@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:get/get.dart'; // Import Get package
+import 'package:get/get.dart';
 import 'home_controller.dart';
 import 'products_model.dart';
 import 'product_detail_page.dart';
 import 'events_model.dart';
-import 'cart_controller.dart'; // Import CartController
+import 'cart_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

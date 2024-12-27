@@ -4,7 +4,6 @@ import 'package:badges/badges.dart' as badges;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'cart_controller.dart';
 import 'cart_detail.dart';
-import 'login_page.dart'; // Đảm bảo import file cart_detail.dart
 
 class MainLayout extends StatefulWidget {
   final List<Widget> pages;

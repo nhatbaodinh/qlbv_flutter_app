@@ -165,6 +165,7 @@ class CartController extends GetxController {
     cart.clear();
     update();
   }
+
   Future<void> clearCartafterPay() async {
     try {
       // Lấy email người dùng hiện tại
